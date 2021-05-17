@@ -24,6 +24,7 @@ module.exports = (db) => {
   });
 
   router.post("/new", (req, res) => {
+    console.log('Yay')
     res.status(200)
   });
   return router;

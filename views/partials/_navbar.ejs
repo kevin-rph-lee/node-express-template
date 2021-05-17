@@ -1,16 +1,46 @@
 <script src="scripts/_navbar.js"></script>
+<link rel="stylesheet" href="/styles/navbar.css" type="text/css" />
 <header>
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand">Template</a>
+    <a class="navbar-brand  navbar-dark bg-dark" href="#">Webapp Template</a>
     <ul class="navbar-nav ml-auto">
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item">Login</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#registerModal">Register</a>
         </div>
       </div>
     </ul>
   </nav>
 
+
+  <!-- Modal -->
+  <div id="registerModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h1>Register New User</h1>
+          <form>
+            <div class="form-group">
+              <label for="register-username">Username</label>
+              <input type="text" class="form-control" id="register-email" placeholder="Enter Username">
+            </div>
+            <div class="form-group">
+              <label for="password1">Password</label>
+              <input type="password" class="form-control" id="password1" placeholder="Password">
+    
+              <label for="password2">Confirm Password</label>
+              <input type="password" class="form-control" id="password2" placeholder="Confirm Password">
+            </div>
+            <button type="submit" class="btn btn-primary" id="register-submit">Submit</button>
+
+          </form>
+        </div>
+        <div class="register-alert"></div>>
+      </div>
+    </div>
+  </div>
 </header>
