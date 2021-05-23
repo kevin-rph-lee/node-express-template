@@ -17,38 +17,42 @@ module.exports = (db, bcrypt, cookieSession) => {
     return re.test(email);
   }
 
-
-  router.get("/", (req, res) => {
-    db.query(`SELECT * FROM users;`)
-      .then(data => {
-        const users = data.rows;
-        res.json({ users });
-      })
-      .catch(err => {
-        res
-          .status(500)
-          .json({ error: err.message });
-      });
-  });
-
   router.post("/new", (req, res) => {
     
     const username = req.body.username.trim().toLowerCase().toString();
     const password = bcrypt.hashSync(req.body.password, 10)
 
+    //Checking if the email is valid
     if (!validateEmail(username)){
       res.status(500).json({error: 'Invalid email!'})
     }
 
-    let queryString = `INSERT INTO users(
+    //Query strings for DB
+    let queryStringInsertUser = `INSERT INTO users(
       username, password
       ) VALUES($1, $2);`
-    let values =  [username, password]
-    db.query(queryString, values)
+    let valuesInsertUser =  [username, password]
+
+    let queryStringCheckUser = `SELECT username FROM USERS WHERE username = $1;`
+    let valuesCheckUser =  [username]
+
+    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
+    db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
-        req.session.username=username
-        db.end()
-        res.status(200).send('done!')
+        if(data['rowCount'] > 0){
+          res.status(500).json({error:'User already exists!'})
+        } else {
+          db.query(queryStringInsertUser, valuesInsertUser)
+          .then(data => {
+            req.session.username=username
+            res.status(200).send('New user registration successful')
+          })
+          .catch(err => {
+            res
+              .status(500)
+              .json({ error: err.message });
+          });
+        }
       })
       .catch(err => {
         res
@@ -57,6 +61,10 @@ module.exports = (db, bcrypt, cookieSession) => {
       });
   });
 
+  router.post("/logout", (req, res) => {
+    req.session = null;
+    res.sendStatus(200);
+  });
 
 
   return router;

@@ -5,13 +5,23 @@ $(() => {
         return re.test(email);
       }
 
+    $('#logout').click(function(e){
+      e.preventDefault()
+      $.ajax({
+        type: "POST",
+        url: "/users/logout",
+        success: function (result) {
+            location.href="/";
+        }
+      })
+    });
+
     $('#register-submit').click(function(e){
         e.preventDefault()
         const username = $('#register-username').val();
         const password = $('#password1').val();
         const passwordConfirm = $('#password2').val();
-    
-
+  
         //Checking if the passwords match
         if (!validateEmail(username)) {
             $('.register-alert').append(`
@@ -26,7 +36,6 @@ $(() => {
             return;
         }
 
-
         //Checking if the passwords match
         if (password !== passwordConfirm) {
           $('.register-alert').append(`
@@ -40,6 +49,7 @@ $(() => {
           $(".alert").delay(3000).fadeOut("slow");
           return;
         }
+
         //CHecking for min password length
         if (password.length <= 4 ) {
           $('.register-alert').append(`
@@ -59,8 +69,7 @@ $(() => {
           data: {username: username.toLowerCase(), password: password},
           method: 'POST'
         }).done((data) => {
-          console.log(data)
-          // window.location.replace(`/`);
+          window.location.replace(`/`);
         }).catch((err) => {
           $('.register-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
