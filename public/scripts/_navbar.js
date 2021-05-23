@@ -7,13 +7,13 @@ $(() => {
 
     $('#register-submit').click(function(e){
         e.preventDefault()
-        const email = $('#register-email').val();
+        const username = $('#register-username').val();
         const password = $('#password1').val();
         const passwordConfirm = $('#password2').val();
     
 
         //Checking if the passwords match
-        if (!validateEmail(email)) {
+        if (!validateEmail(username)) {
             $('.register-alert').append(`
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Error!</strong> Email incorrectly formatted
@@ -56,10 +56,11 @@ $(() => {
     
         $.ajax({
           url: '/users/new',
-          data: {email: email.toLowerCase(), password: password},
+          data: {username: username.toLowerCase(), password: password},
           method: 'POST'
-        }).done((id) => {
-          window.location.replace(`/`);
+        }).done((data) => {
+          console.log(data)
+          // window.location.replace(`/`);
         }).catch((err) => {
           $('.register-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
