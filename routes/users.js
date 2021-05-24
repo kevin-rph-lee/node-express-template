@@ -29,8 +29,8 @@ module.exports = (db, bcrypt, cookieSession) => {
 
     //Query strings for DB
     let queryStringInsertUser = `INSERT INTO users(
-      username, password
-      ) VALUES($1, $2);`
+      username, password, role
+      ) VALUES($1, $2, false);`
     let valuesInsertUser =  [username, password]
 
     let queryStringCheckUser = `SELECT username FROM USERS WHERE username = $1;`

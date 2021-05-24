@@ -54,7 +54,7 @@ app.use("/users", usersRoutes(db, bcrypt, cookieSession));
 // Separate them into separate routes files (see above).
 app.get("/", (req, res) => {
 
-  let queryStringGetUser = `SELECT username, id FROM USERS WHERE username = $1;`
+  let queryStringGetUser = `SELECT username, id, role FROM USERS WHERE username = $1;`
   let valuesGetUser =  [req.session.username]
 
   //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
@@ -62,12 +62,12 @@ app.get("/", (req, res) => {
     .then(data => {
       let user;
       if(req.session.username === undefined){
-        user = {id: null, username: null};
+        user = {id: null, username: null, role: false};
         res.render("index", {user});
       } else if(data['rowCount'] === 0){
         res.status(500).send('Internal Database Error! Please contact your system administrator')
       } else {
-        user = {id: data['rows'][0]['id'], username: data['rows'][0]['username']}
+        user = {id: data['rows'][0]['id'], username: data['rows'][0]['username'], role: data['rows'][0]['role']}
         res.render("index", {user});
       }
     })

@@ -1,6 +1,8 @@
 // load .env data into process.env
 require('dotenv').config();
 
+
+
 // other dependencies
 const fs = require('fs');
 const chalk = require('chalk');
@@ -33,6 +35,8 @@ const runSeedFiles = function () {
     client.querySync(sql);
   }
 };
+
+
 
 try {
   console.log(`-> Connecting to PG using ${connectionString} ...`);

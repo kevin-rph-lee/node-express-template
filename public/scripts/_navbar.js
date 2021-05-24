@@ -101,8 +101,8 @@ $(() => {
             </button>
             </div>
             `)
-            $('#login-form').trigger("reset");
             $(".alert").delay(3000).fadeOut("slow");
+            $('#login-form').trigger("reset");
             return;
         }
 
@@ -123,6 +123,7 @@ $(() => {
           </button>
           </div>
           `)
+          $(".alert").delay(3000).fadeOut("slow");
         });
       });
 
