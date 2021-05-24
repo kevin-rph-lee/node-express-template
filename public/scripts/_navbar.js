@@ -22,7 +22,7 @@ $(() => {
         const password = $('#password1').val();
         const passwordConfirm = $('#password2').val();
   
-        //Checking if the passwords match
+        //Checking if the email is valid
         if (!validateEmail(username)) {
             $('.register-alert').append(`
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -33,6 +33,7 @@ $(() => {
             </div>
             `)
             $(".alert").delay(3000).fadeOut("slow");
+            $('#register-form').trigger("reset");
             return;
         }
 
@@ -46,11 +47,12 @@ $(() => {
           </button>
           </div>
           `)
+          $('#register-form').trigger("reset");
           $(".alert").delay(3000).fadeOut("slow");
           return;
         }
 
-        //CHecking for min password length
+        //Checking for min password length
         if (password.length <= 4 ) {
           $('.register-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -60,6 +62,7 @@ $(() => {
           </button>
           </div>
           `)
+          $('#register-form').trigger("reset");
           $(".alert").delay(3000).fadeOut("slow");
           return;
         }
@@ -71,6 +74,7 @@ $(() => {
         }).done((data) => {
           window.location.replace(`/`);
         }).catch((err) => {
+          $('#register-form').trigger("reset");
           $('.register-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
           <strong>Error!</strong> ${err.responseText}
@@ -81,5 +85,49 @@ $(() => {
           `)
         });
       });
+
+      $('#login-submit').click(function(e){
+        e.preventDefault()
+        const username = $('#login-username').val();
+        const password = $('#login-password').val();
+  
+        //Checking if the email is valid
+        if (!validateEmail(username)) {
+            $('.register-alert').append(`
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> Email incorrectly formatted
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            `)
+            $('#login-form').trigger("reset");
+            $(".alert").delay(3000).fadeOut("slow");
+            return;
+        }
+
+        $.ajax({
+          url: '/users/login',
+          data: {username: username.toLowerCase(), password: password},
+          method: 'POST'
+        }).done((data) => {
+          $('#login-form').trigger("reset");
+          window.location.replace(`/`);
+        }).catch((err) => {
+          $('#login-form').trigger("reset");
+          $('.register-alert').append(`
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Error!</strong> ${err.responseText}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+          `)
+        });
+      });
+
+
+
+
 });
   

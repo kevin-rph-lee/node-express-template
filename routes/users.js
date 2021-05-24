@@ -24,7 +24,7 @@ module.exports = (db, bcrypt, cookieSession) => {
 
     //Checking if the email is valid
     if (!validateEmail(username)){
-      res.status(500).json({error: 'Invalid email!'})
+      res.status(500).send('Invalid email!')
     }
 
     //Query strings for DB
@@ -40,7 +40,7 @@ module.exports = (db, bcrypt, cookieSession) => {
     db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
         if(data['rowCount'] > 0){
-          res.status(500).json({error:'User already exists!'})
+          res.status(500).send('User already exists!')
         } else {
           db.query(queryStringInsertUser, valuesInsertUser)
           .then(data => {
@@ -60,6 +60,44 @@ module.exports = (db, bcrypt, cookieSession) => {
           .json({ error: err.message });
       });
   });
+
+  router.post("/login", (req, res) => {
+    
+    const username = req.body.username.trim().toLowerCase().toString();
+    const password = req.body.password
+
+    //Checking if the email is valid
+    if (!validateEmail(username)){
+      res.status(500).send('Invalid email!')
+    }
+
+    //Query strings for DB
+    let queryStringCheckUser = `SELECT username, password FROM USERS WHERE username = $1;`
+    let valuesCheckUser =  [username]
+
+    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
+    db.query(queryStringCheckUser, valuesCheckUser)
+      .then(data => {
+        if(data['rowCount'] == 0){
+          res.status(500).send('Invalid username or password!')
+        } else if((data['rowCount'] > 1)) {
+          res.status(500).send('Internal Database Error! Please contact your system administrator')
+        } else if(bcrypt.compareSync(password, data['rows'][0]['password'])){
+          req.session.username=username
+          res.status(200).send('Login successful')
+        } else if(!bcrypt.compareSync(password, data['rows'][0]['password'])){
+          res.status(500).send('Invalid username or password!')
+        } else {
+          res.status(500).send('Internal Error! Please contact your system administrator')
+        }
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ error: err.message });
+      });
+  });
+
 
   router.post("/logout", (req, res) => {
     req.session = null;
