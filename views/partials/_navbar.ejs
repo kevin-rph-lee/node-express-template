@@ -2,9 +2,14 @@
 <link rel="stylesheet" href="/styles/navbar.css" type="text/css" />
 <header>
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand  navbar-dark bg-dark" href="#">Webapp Template</a>
+    <a class="navbar-brand  navbar-dark bg-dark" href="/">Webapp Template</a>
     <ul class="navbar-nav ml-auto">
-      <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['username'] %></a>
+      <% if (user['username'] === null) { %>
+        <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: Guest</a>
+      <% } %>
+      <% if (user['username']  !== null) { %>
+        <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['username'] %></a>
+      <% } %> 
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
