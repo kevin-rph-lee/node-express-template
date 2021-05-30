@@ -1,84 +1,87 @@
-<script src="scripts/_navbar.js"></script>
-<link rel="stylesheet" href="/styles/navbar.css" type="text/css" />
-<header>
-  <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand  navbar-dark bg-dark" href="/">Webapp Template</a>
-    <ul class="navbar-nav ml-auto">
-      <% if (user['username'] === null) { %>
-        <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: Guest</a>
-      <% } %>
-      <% if (user['username']  !== null) { %>
-        <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['username'] %></a>
-      <% } %> 
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-          <% if (user['username'] === null) { %>
-            <a class="dropdown-item" data-toggle="modal" data-target="#registerModal">Register</a>
-            <a class="dropdown-item" data-toggle="modal" data-target="#loginModal">Login</a>
-          <% } %>
-          <% if (user['role']  == true) { %>
-            <a class="dropdown-item" id="logout">Admin</a>
-          <% } %> 
-          <% if (user['username']  !== null) { %>
-            <a class="dropdown-item" id="logout">Logout</a>
-          <% } %> 
-        </div>
-      </div>
-    </ul>
-  </nav>
 
-  <!-- Register User Modal -->
-  <div id="registerModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!-- Register User Modal content-->
-      <div class="modal-content">
-        <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h1>Register New User</h1>
-          <form id="register-form">
-            <div class="form-group">
-              <label for="register-username">Username</label>
-              <input type="text" class="form-control" id="register-username" placeholder="Enter Email">
-            </div>
-            <div class="form-group">
-              <label for="password1">Password</label>
-              <input type="password" class="form-control" id="password1" placeholder="Password">
-              <label for="password2">Confirm Password</label>
-              <input type="password" class="form-control" id="password2" placeholder="Confirm Password">
-            </div>
-            <button type="submit" class="btn btn-primary" id="register-submit">Submit</button>
-          </form>
-        </div>
-        <div class="register-alert"></div>
+<head>
+  <script src="/scripts/_navbar.js"></script>
+  <link rel="stylesheet" href="/styles/navbar.css" type="text/css" />
+</head>
+
+
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+  <a class="navbar-brand  navbar-dark bg-dark" href="/">Webapp Template</a>
+  <ul class="navbar-nav ml-auto">
+    <% if (user['username'] === null) { %>
+      <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: Guest</a>
+    <% } %>
+    <% if (user['username']  !== null) { %>
+      <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['username'] %></a>
+    <% } %> 
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+        <% if (user['username'] === null) { %>
+          <a class="dropdown-item" data-toggle="modal" data-target="#registerModal">Register</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#loginModal">Login</a>
+        <% } %>
+        <% if (user['role']  == true) { %>
+          <a class="dropdown-item" id="admin">Admin</a>
+        <% } %> 
+        <% if (user['username']  !== null) { %>
+          <a class="dropdown-item" id="profile" href="/users/<%=user['id'] %>"> Profile</a>
+          <a class="dropdown-item" id="logout">Logout</a>
+        <% } %> 
       </div>
     </div>
-  </div>
+  </ul>
+</nav>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!-- Login Modal content-->
-      <div class="modal-content">
-        <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h1>Login</h1>
-          <form id="login-form">
-            <div class="form-group">
-              <label for="login-username">Username</label>
-              <input type="text" class="form-control" id="login-username" placeholder="Enter Email">
-            </div>
-            <div class="form-group">
-              <label for="login-password">Password</label>
-              <input type="password" class="form-control" id="login-password" placeholder="Password">
-            </div>
-            <button type="submit" class="btn btn-primary" id="login-submit">Submit</button>
-          </form>
-        </div>
-        <div class="register-alert"></div>
+<!-- Register User Modal -->
+<div id="registerModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Register User Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h1>Register New User</h1>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="register-username">Username</label>
+            <input type="text" class="form-control" id="register-username" placeholder="Enter Email">
+          </div>
+          <div class="form-group">
+            <label for="password1">Password</label>
+            <input type="password" class="form-control" id="password1" placeholder="Password">
+            <label for="password2">Confirm Password</label>
+            <input type="password" class="form-control" id="password2" placeholder="Confirm Password">
+          </div>
+          <button type="submit" class="btn btn-primary" id="register-submit">Submit</button>
+        </form>
       </div>
+      <div class="register-alert"></div>
     </div>
   </div>
+</div>
 
-</header>
+<!-- Login Modal -->
+<div id="loginModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Login Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h1>Login</h1>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" class="form-control" id="login-username" placeholder="Enter Email">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" class="form-control" id="login-password" placeholder="Password">
+          </div>
+          <button type="submit" class="btn btn-primary" id="login-submit">Submit</button>
+        </form>
+      </div>
+      <div class="register-alert"></div>
+    </div>
+  </div>
+</div>
