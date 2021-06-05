@@ -5,11 +5,6 @@ $(() => {
         return re.test(email);
       }
 
-      $('#profile').click(function(e){
-        console.log(user['id'])
-      });
-  
-
     $('#logout').click(function(e){
       console.log('Logout')
       e.preventDefault()

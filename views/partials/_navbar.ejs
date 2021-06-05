@@ -8,24 +8,24 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
   <a class="navbar-brand  navbar-dark bg-dark" href="/">Webapp Template</a>
   <ul class="navbar-nav ml-auto">
-    <% if (user['username'] === null) { %>
+    <% if (user['userName'] === null) { %>
       <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: Guest</a>
     <% } %>
-    <% if (user['username']  !== null) { %>
-      <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['username'] %></a>
+    <% if (user['userName']  !== null) { %>
+      <a class="navbar-text  navbar-dark bg-dark" href="#" id="username-display">User: <%= user['userName'] %></a>
     <% } %> 
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-        <% if (user['username'] === null) { %>
+        <% if (user['userName'] == null) { %>
           <a class="dropdown-item" data-toggle="modal" data-target="#registerModal">Register</a>
           <a class="dropdown-item" data-toggle="modal" data-target="#loginModal">Login</a>
         <% } %>
-        <% if (user['role']  == true) { %>
-          <a class="dropdown-item" id="admin">Admin</a>
+        <% if (user['role']  == 1) { %>
+          <a class="dropdown-item" id="admin" href="/users/admin">Admin</a>
         <% } %> 
-        <% if (user['username']  !== null) { %>
+        <% if (user['userName']  !== null) { %>
           <a class="dropdown-item" id="profile" href="/users/<%=user['id'] %>"> Profile</a>
           <a class="dropdown-item" id="logout">Logout</a>
         <% } %> 

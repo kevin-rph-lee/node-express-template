@@ -10,7 +10,7 @@ const express = require('express');
 const { restart } = require('nodemon');
 const router  = express.Router();
 
-module.exports = (db, bcrypt, cookieSession) => {
+module.exports = (db, bcrypt, cookieSession, getUserData) => {
 
   //Checks for valid email
   function validateEmail (email) {
@@ -18,25 +18,31 @@ module.exports = (db, bcrypt, cookieSession) => {
     return re.test(email);
   }
 
-  router.get("/:id", (req, res) => {
-
-    let queryStringGetUser = `SELECT username, id, role FROM USERS WHERE id = $1;`
-    let valuesGetUser =  [req.params.id]
+  router.get("/admin", (req, res) => {
+    let user= getUserData(req)
+    if(user['role'] == 1){
+      console.log('here@')
+      res.render('user_admin', {user});
+    } else {
+      res.status(403).send('Forbidden')
+    }
     
+  });
 
+  router.get("/:id", (req, res) => {
+    let user= getUserData(req)
+    let queryStringGetUser = `SELECT userName, id, role FROM USERS WHERE id = $1;`
+    let valuesGetUser =  [req.params.id]
     //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
     db.query(queryStringGetUser, valuesGetUser)
       .then(data => {
-        let user;
-        if(req.session.username === undefined){
-          user = {id: null, username: null, role: false};
-          res.render("index", {user});
+        if(user['userName'] == undefined){
+          res.status(403).send('Forbidden')
         } else if(data['rowCount'] === 0){
           res.status(500).send('Internal Database Error! Please contact your system administrator')
-        } else if(parseInt(req.session.userid) != parseInt(data['rows'][0]['id'])){
+        } else if(parseInt(user['id']) != parseInt(data['rows'][0]['id'])){
           res.status(403).send('Forbidden')
         } else {
-          user = {id: data['rows'][0]['id'], username: data['rows'][0]['username'], role: data['rows'][0]['role']}
           res.render("user", {user});
         }
       })
@@ -46,6 +52,7 @@ module.exports = (db, bcrypt, cookieSession) => {
           .json({ error: err.message });
       });
   });
+
 
   router.post("/new", (req, res) => {
     
@@ -74,8 +81,9 @@ module.exports = (db, bcrypt, cookieSession) => {
         } else {
           db.query(queryStringInsertUser, valuesInsertUser)
           .then(data => {
-            req.session.userid = data['rows'][0]['id']
+            req.session.id = data['rows'][0]['id']
             req.session.username=username
+            eq.session.role = 2
             res.status(200).send('New user registration successful')
           })
           .catch(err => {
@@ -92,8 +100,8 @@ module.exports = (db, bcrypt, cookieSession) => {
       });
   });
 
+  
   router.post("/login", (req, res) => {
-    
     const username = req.body.username.trim().toLowerCase().toString();
     const password = req.body.password
 
@@ -103,19 +111,21 @@ module.exports = (db, bcrypt, cookieSession) => {
     }
 
     //Query strings for DB
-    let queryStringCheckUser = `SELECT id, username, password FROM USERS WHERE username = $1;`
+    let queryStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE username = $1;`
     let valuesCheckUser =  [username]
 
     //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
     db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
+        console.log(data.rows)
         if(data['rowCount'] == 0){
           res.status(500).send('Invalid username or password!')
         } else if((data['rowCount'] > 1)) {
           res.status(500).send('Internal Database Error! Please contact your system administrator')
         } else if(bcrypt.compareSync(password, data['rows'][0]['password'])){
-          req.session.username = username
-          req.session.userid = data['rows'][0]['id']
+          req.session.userName = username
+          req.session.id = data['rows'][0]['id']
+          req.session.role = data['rows'][0]['role']
           res.status(200).send('Login successful')
         } else if(!bcrypt.compareSync(password, data['rows'][0]['password'])){
           res.status(500).send('Invalid username or password!')
@@ -130,9 +140,7 @@ module.exports = (db, bcrypt, cookieSession) => {
       });
   });
 
-
   router.post("/logout", (req, res) => {
-    console.log('Logging out')
     req.session = null;
     res.sendStatus(200);
   });
