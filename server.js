@@ -28,17 +28,20 @@ db.connect();
 //Checks cookie session to see if someone is logged in. User object is passed down to EJS file. 
 getUserData = (req) =>{
   let user = {}
-  console.log('ID ' + req.session.id)
-  console.log('UserName ' + req.session.userName)
-  console.log('Role ' + req.session.role)
+
+  //Troubleshooting logging
+  // console.log('ID ' + req.session.id)
+  // console.log('UserName ' + req.session.userName)
+  // console.log('Role ' + req.session.role)
+
   if((req.session.userName == undefined) || (req.session.userName == null)){
-    console.log('Not logged in')
+    // console.log('Not logged in')
     user = {id: null, 
             userName: null, 
             role: null};
     return user;
   } else {
-    console.log('Logged in')
+    // console.log('Logged in')
     user = {userName:req.session.userName,
             id: req.session.id,
             role: req.session.role}
@@ -80,7 +83,7 @@ app.use("/users", usersRoutes(db, bcrypt, cookieSession, getUserData));
 // Separate them into separate routes files (see above).
 app.get("/", (req, res) => {
   let user = getUserData(req)
-  res.render("index", {user});
+  res.render("index", {user:user});
 });
 
 app.listen(PORT, () => {

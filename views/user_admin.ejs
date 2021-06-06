@@ -3,11 +3,11 @@
   <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     
-    <title>Admin</title>
+    <title id="title">Admin</title>
 
     <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
     <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
-    <link rel="stylesheet" href="/styles/index.css" type="text/css" />
+    <link rel="stylesheet" href="/styles/user_admin.css" type="text/css" />
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -20,7 +20,33 @@
   <%- include partials/_navbar.ejs %>
   <body>
     
-    <h1>Admin Page</h1>
+    <div class="container">
+      <h1 id="title">User Administration</h1>
+    </div>
+    <div id="admin-table" >
+      <table class="table table-striped">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Role</th>
+            <th scope="col">Update Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i in rows) { %>
+            <tr>
+              <th><%= rows[i]['id'] %></th>
+              <th><%= rows[i]['username'] %></th>
+              <th><%= rows[i]['role'] %></th>
+              <th><button type="button" class="btn btn-warning" data-user-id= "<%= rows[i]['id'] %>"  >Update</button></th>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+
 
   </body>
 </html>

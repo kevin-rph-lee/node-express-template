@@ -20,12 +20,22 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
 
   router.get("/admin", (req, res) => {
     let user= getUserData(req)
-    if(user['role'] == 1){
-      console.log('here@')
-      res.render('user_admin', {user});
-    } else {
-      res.status(403).send('Forbidden')
-    }
+
+    let queryStringGetUser = `SELECT userName, id, role FROM USERS`
+
+    db.query(queryStringGetUser)
+      .then(data => {
+        if(user['role'] == 1){
+          res.render('user_admin', {user: user, rows: data['rows']});
+        } else {
+          res.status(403).send('Forbidden')
+        }
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ error: err.message });
+      });
     
   });
 
@@ -43,7 +53,7 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
         } else if(parseInt(user['id']) != parseInt(data['rows'][0]['id'])){
           res.status(403).send('Forbidden')
         } else {
-          res.render("user", {user});
+          res.render("user", {user:user});
         }
       })
       .catch(err => {
@@ -100,6 +110,52 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
       });
   });
 
+
+  router.post("/:id/edit", (req, res) => {
+    const userID = req.params.id
+    const currentPassword = req.body.currentPassword
+    const newPassword = req.body.newPassword
+    const hashNewPassword = bcrypt.hashSync(newPassword, 10)
+
+
+    let queryStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
+    let valuesCheckUser =  [userID]
+
+    //Query strings for DB
+    let queryStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
+    let valuesUpdateUserPass =  [hashNewPassword, userID]
+
+    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
+    db.query(queryStringCheckUser, valuesCheckUser)
+      .then(data => {
+        if((data['rowCount'] != 1)) {
+
+          res.status(500).send('Internal Database Error! Please contact your system administrator')
+        } else if(bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
+
+          db.query(queryStringUpdateUserPass, valuesUpdateUserPass)
+          .then(data => {
+            res.status(200).send('Password update successful')
+          })
+          .catch(err => {
+            res
+              .status(500)
+              .json({ error: err.message });
+          });
+
+        } else if(!bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
+          res.status(500).send('Invalid username or password!')
+        } else {
+          res.status(500).send('Internal Error! Please contact your system administrator')
+        }
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ error: err.message });
+      });
+  });
+
   
   router.post("/login", (req, res) => {
     const username = req.body.username.trim().toLowerCase().toString();
@@ -117,7 +173,7 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
     db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
-        console.log(data.rows)
+
         if(data['rowCount'] == 0){
           res.status(500).send('Invalid username or password!')
         } else if((data['rowCount'] > 1)) {
@@ -139,6 +195,13 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
           .json({ error: err.message });
       });
   });
+
+  router.post("/update", (req, res) => {
+
+  });
+
+
+  
 
   router.post("/logout", (req, res) => {
     req.session = null;
