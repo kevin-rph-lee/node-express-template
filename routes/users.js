@@ -93,7 +93,7 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
           .then(data => {
             req.session.id = data['rows'][0]['id']
             req.session.username=username
-            eq.session.role = 2
+            req.session.role = 2
             res.status(200).send('New user registration successful')
           })
           .catch(err => {
@@ -117,6 +117,7 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     const newPassword = req.body.newPassword
     const hashNewPassword = bcrypt.hashSync(newPassword, 10)
 
+    let user = getUserData(req);
 
     let queryStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
     let valuesCheckUser =  [userID]
@@ -125,8 +126,10 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     let queryStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
     let valuesUpdateUserPass =  [hashNewPassword, userID]
 
-    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
-    db.query(queryStringCheckUser, valuesCheckUser)
+
+    if( req.params.id == user['id'] || user['role'] == 1){
+      //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
+      db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
         if((data['rowCount'] != 1)) {
 
@@ -153,7 +156,10 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
         res
           .status(500)
           .json({ error: err.message });
-      });
+      });    
+    } else {
+      res.status(500).send('Forbidden')
+    }
   });
 
   
