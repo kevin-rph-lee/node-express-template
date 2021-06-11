@@ -1,6 +1,6 @@
 $(() => {
 
-  $('#newPassword-submit').click(function(e){
+  $('#newPasswordAdmin-submit').click(function(e){
       e.preventDefault()
       const currentPassword = $('#currentPassword').val();
       const newPassword = $('#newPassword1').val();

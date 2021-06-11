@@ -14,12 +14,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
-    <script type="text/javascript" src="/scripts/app.js"></script>
+    <script type="text/javascript" src="/scripts/user_admin.js"></script>
 
   </head>
   <%- include partials/_navbar.ejs %>
+
+
+
   <body>
-    
     <div class="container">
       <h1 id="title">User Administration</h1>
     </div>
@@ -39,14 +41,36 @@
               <th><%= rows[i]['id'] %></th>
               <th><%= rows[i]['username'] %></th>
               <th><%= rows[i]['role'] %></th>
-              <th><button type="button" class="btn btn-warning" data-user-id= "<%= rows[i]['id'] %>"  >Update</button></th>
+              <th><button type="button" class="btn btn-warning btn-update-pass" data-username= '<%= rows[i]['username'] %>' data-id='<%= rows[i]['id'] %>'  data-toggle="modal" data-target="#updatePasswordModal">Update</button></th>
             </tr>
           <% } %>
         </tbody>
       </table>
     </div>
-
-
-
   </body>
 </html>
+
+<!-- Update Password Modal -->
+<div id="updatePasswordModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Update Password Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h1>Update password for <span id="selected-user"></span></h1>
+        <form id="newPassword-form">
+          <div class="form-group">
+            <label for="currentPassword">Enter your own password</label>
+            <input type="password" class="form-control" id="currentPassword" placeholder="Your password">
+            <label for="newPassword1">Users new password</label>
+            <input type="password" class="form-control" id="newPassword1" placeholder="Users new password">
+            <label for="newPassword2">Confirm users new password</label>
+            <input type="password" class="form-control" id="newPassword2" placeholder="Confirm new password">
+          </div>
+          <button type="submit" class="btn btn-primary" id="newPasswordAdmin-submit">Submit</button>
+        </form>
+      </div>
+      <div class="newPassword-alert"></div>
+    </div>
+  </div>
+</div>

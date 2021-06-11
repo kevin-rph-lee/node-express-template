@@ -127,8 +127,8 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     let valuesUpdateUserPass =  [hashNewPassword, userID]
 
 
-    if( req.params.id == user['id'] || user['role'] == 1){
-      //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
+    if( req.params.id == user['id']){
+
       db.query(queryStringCheckUser, valuesCheckUser)
       .then(data => {
         if((data['rowCount'] != 1)) {
@@ -161,6 +161,52 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
       res.status(500).send('Forbidden')
     }
   });
+
+
+
+  router.post("/:id/admin/edit", (req, res) => {
+    const selectedUserID = req.params.id
+    const currentPassword = req.body.currentPassword
+    const newPassword = req.body.newPassword
+    const hashNewPassword = bcrypt.hashSync(newPassword, 10)
+
+    let user = getUserData(req);
+
+    let queryStringCheckAdminPass = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
+    let valuesCheckAdminPass =  [user['id'] ]
+
+
+    //Query strings for DB
+    let queryStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
+    let valuesUpdateUserPass =  [hashNewPassword, selectedUserID]
+
+
+    db.query(queryStringCheckAdminPass, valuesCheckAdminPass)
+    .then(data => {
+      if((data['rowCount'] != 1)) {
+        res.status(500).send('Internal Database Error! Please contact your system administrator')
+      } else if(bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
+        db.query(queryStringUpdateUserPass, valuesUpdateUserPass)
+        .then(data => {    
+          res.status(200).send('Password update successful')
+        })
+        .catch(err => {
+          res
+            .status(500)
+            .json({ error: err.message });
+        });    
+      } else {
+        res.status(500).send('Incorrect Password')
+      }
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .json({ error: err.message });
+    });    
+
+  });
+
 
   
   router.post("/login", (req, res) => {
