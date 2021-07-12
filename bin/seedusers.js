@@ -11,7 +11,7 @@ if(process.env.DATABASE_URL){
   console.log('Connection string = ' + process.env.DATABASE_URL)
 
   const db = new Client({
-    connectionString: process.env.DATABASE_URL
+    connectionString: 'postgres://jkjwkyedvilnki:331cb59e68a7d0fee217b0118f983c0a2593eebb6da83e350a465e41c855f83e@ec2-52-5-1-20.compute-1.amazonaws.com:5432/d1s6dfh5i22dig?ssl=true'
   });
 
   db.connect();
