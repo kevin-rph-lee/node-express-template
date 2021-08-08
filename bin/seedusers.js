@@ -11,7 +11,7 @@ if(process.env.DATABASE_URL){
   console.log('Connection string = ' + process.env.DATABASE_URL)
 
   const db = new Client({
-    connectionString: process.env.DATABASE_URL + '?sslmode=require',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
     }
