@@ -6,7 +6,6 @@ $(() => {
       }
 
     $('#logout').click(function(e){
-      console.log('Logout')
       e.preventDefault()
       $.ajax({
         type: "POST",

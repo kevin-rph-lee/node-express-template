@@ -1,5 +1,5 @@
 // load .env data into process.env
-require('dotenv').config();
+// require('dotenv').config();
 
 // Web server config
 const PORT       = process.env.PORT || 8080;
@@ -30,9 +30,9 @@ getUserData = (req) =>{
   let user = {}
 
   //Troubleshooting logging
-  console.log('ID ' + req.session.id)
-  console.log('UserName ' + req.session.userName)
-  console.log('Role ' + req.session.role)
+  // console.log('ID ' + req.session.id)
+  // console.log('UserName ' + req.session.userName)
+  // console.log('Role ' + req.session.role)
 
   if((req.session.userName == undefined) || (req.session.userName == null)){
     // console.log('Not logged in')
