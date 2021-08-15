@@ -1,11 +1,11 @@
 $(() => {
 
-  $('#newPasswordAdmin-submit').click(function(e){
+  $('#newPassword-submit').click(function(e){
       e.preventDefault()
       const currentPassword = $('#currentPassword').val();
       const newPassword = $('#newPassword1').val();
       const newPasswordConfirm = $('#newPassword2').val();
-
+      console.log('Clickong new new passowrd')
       if (currentPassword.length < 1) {
           $('.newPassword-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
