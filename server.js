@@ -24,6 +24,20 @@ const dbParams = require('./lib/db.js');
 const db = new Pool(dbParams);
 db.connect();
 
+// Load the logger first so all (static) HTTP requests are logged to STDOUT
+// 'dev' = Concise output colored by response status for development use.
+//         The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
+app.use(morgan('dev'));
+
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/styles", sass({
+  src: __dirname + "/styles",
+  dest: __dirname + "/public/styles",
+  debug: true,
+  outputStyle: 'expanded'
+}));
+app.use(express.static("public"));
 
 //Checks cookie session to see if someone is logged in. User object is passed down to EJS file. 
 getUserData = (req) =>{
@@ -49,38 +63,15 @@ getUserData = (req) =>{
   }
 }
 
-
-// Load the logger first so all (static) HTTP requests are logged to STDOUT
-// 'dev' = Concise output colored by response status for development use.
-//         The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
-app.use(morgan('dev'));
-
-app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/styles", sass({
-  src: __dirname + "/styles",
-  dest: __dirname + "/public/styles",
-  debug: true,
-  outputStyle: 'expanded'
-}));
-app.use(express.static("public"));
-
 // Separated Routes for each Resource
 // Note: Feel free to replace the example routes below with your own
 const usersRoutes = require("./routes/users");
 
-// Mount all resource routes
-// Note: Feel free to replace the example routes below with your own
+// Resource routes
 app.use("/users", usersRoutes(db, bcrypt, cookieSession, getUserData));
 // Note: mount other resources here, using the same pattern above
 
-
-
-
-
 // Home page
-// Warning: avoid creating more routes in this file!
-// Separate them into separate routes files (see above).
 app.get("/", (req, res) => {
   let user = getUserData(req)
   res.render("index", {user:user});

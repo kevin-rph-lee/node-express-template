@@ -1,3 +1,0 @@
--- Users table seeds here (Example)
--- INSERT INTO users (username, password, role) VALUES ('Admin@admin.com', '$2b$10$FgPgQOwdLzL1gbuktUHJlO/DIFMBKvgMPQSKHijONj0QeBH0onVKC', True);
--- INSERT INTO users (username, password, role) VALUES ('user@user.com', '$2b$10$SYj/YZZN6RGDohV1xqeCoOIB9g6UkBkHmF1/l9IkXcpEACNvlFTwG', False);
