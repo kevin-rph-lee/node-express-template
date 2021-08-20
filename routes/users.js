@@ -1,10 +1,3 @@
-/*
- * All routes for Users are defined here
- * Since this file is loaded in server.js into api/users,
- *   these routes are mounted onto /users
- * See: https://expressjs.com/en/guide/using-middleware.html#middleware.router
- */
-
 const { query } = require('express');
 const express = require('express');
 const { restart } = require('nodemon');
@@ -18,13 +11,17 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     return re.test(email);
   }
 
-  router.get("/admin", (req, res) => {
-    let user= getUserData(req)
+  //Accessing the admin page that views all of the users in the system
+  router.get('/admin', (req, res) => {
 
-    let queryStringGetUser = `SELECT userName, id, role FROM USERS`
+    //Validating if the user is logged in
+    let user = getUserData(req)
 
-    db.query(queryStringGetUser)
+    let SQLStringGetUser = `SELECT userName, id, role FROM USERS`
+
+    db.query(SQLStringGetUser)
       .then(data => {
+        //Checking if the user is an admin (roleID = 1)
         if(user['role'] == 1){
           res.render('user_admin', {user: user, rows: data['rows']});
         } else {
@@ -36,15 +33,17 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
           .status(500)
           .json({ error: err.message });
       });
-    
   });
 
-  router.get("/:id", (req, res) => {
+  //Returns information for a single user. 
+  router.get('/:id', (req, res) => {
+    //Validating if the requesting user is logged in 
     let user= getUserData(req)
-    let queryStringGetUser = `SELECT userName, id, role FROM USERS WHERE id = $1;`
+
+    let SQLStringGetUser = `SELECT userName, id, role FROM USERS WHERE id = $1;`
     let valuesGetUser =  [req.params.id]
-    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
-    db.query(queryStringGetUser, valuesGetUser)
+
+    db.query(SQLStringGetUser, valuesGetUser)
       .then(data => {
         if(user['userName'] == undefined){
           res.status(403).send('Forbidden')
@@ -63,8 +62,8 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
       });
   });
 
-
-  router.post("/new", (req, res) => {
+  //Creating a new user
+  router.post('/new', (req, res) => {
     
     const username = req.body.username.trim().toLowerCase().toString();
     const password = bcrypt.hashSync(req.body.password, 10)
@@ -75,21 +74,20 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     }
 
     //Query strings for DB
-    let queryStringInsertUser = `INSERT INTO users(
+    let SQLStringInsertUser = `INSERT INTO users(
       username, password, role
       ) VALUES($1, $2, false) RETURNING id;`
     let valuesInsertUser =  [username, password]
-
-    let queryStringCheckUser = `SELECT username FROM USERS WHERE username = $1;`
+    let SQLStringCheckUser = `SELECT username FROM USERS WHERE username = $1;`
     let valuesCheckUser =  [username]
 
-    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
-    db.query(queryStringCheckUser, valuesCheckUser)
+    //Checks if user exists first. Throws error if already exists, if not create new user in DB and log them in.
+    db.query(SQLStringCheckUser, valuesCheckUser)
       .then(data => {
         if(data['rowCount'] > 0){
           res.status(500).send('User already exists!')
         } else {
-          db.query(queryStringInsertUser, valuesInsertUser)
+          db.query(SQLStringInsertUser, valuesInsertUser)
           .then(data => {
             req.session.id = data['rows'][0]['id']
             req.session.username=username
@@ -110,8 +108,8 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
       });
   });
 
-
-  router.post("/:id/edit", (req, res) => {
+  //Route for when user edits their own password
+  router.post('/:id/edit', (req, res) => {
     const userID = req.params.id
     const currentPassword = req.body.currentPassword
     const newPassword = req.body.newPassword
@@ -119,24 +117,22 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
 
     let user = getUserData(req);
 
-    let queryStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
+    let SQLStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
     let valuesCheckUser =  [userID]
 
     //Query strings for DB
-    let queryStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
+    let SQLStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
     let valuesUpdateUserPass =  [hashNewPassword, userID]
 
+    //Checking if the user making the request is the same person who is logged in (preventing from changing someone ELSE's password)
+    if(req.params.id == user['id']){
 
-    if( req.params.id == user['id']){
-
-      db.query(queryStringCheckUser, valuesCheckUser)
+      db.query(SQLStringCheckUser, valuesCheckUser)
       .then(data => {
         if((data['rowCount'] != 1)) {
-
           res.status(500).send('Internal Database Error! Please contact your system administrator')
         } else if(bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
-
-          db.query(queryStringUpdateUserPass, valuesUpdateUserPass)
+          db.query(SQLStringUpdateUserPass, valuesUpdateUserPass)
           .then(data => {
             res.status(200).send('Password update successful')
           })
@@ -145,7 +141,6 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
               .status(500)
               .json({ error: err.message });
           });
-
         } else if(!bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
           res.status(500).send('Invalid username or password!')
         } else {
@@ -162,31 +157,30 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     }
   });
 
-
-
-  router.post("/:id/admin/edit", (req, res) => {
+  //Route for when an admin updates the password of another user
+  router.post('/:id/admin/edit', (req, res) => {
     const selectedUserID = req.params.id
     const currentPassword = req.body.currentPassword
     const newPassword = req.body.newPassword
     const hashNewPassword = bcrypt.hashSync(newPassword, 10)
-
     let user = getUserData(req);
 
-    let queryStringCheckAdminPass = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
+    //Getting the role of the user hitting this route
+    let SQLStringCheckAdminPass = `SELECT id, username, password, role FROM USERS WHERE id = $1;`
     let valuesCheckAdminPass =  [user['id'] ]
 
-
-    //Query strings for DB
-    let queryStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
+    //Update SQL string to update the other users password
+    let SQLStringUpdateUserPass = `UPDATE users SET password = $1 WHERE id = $2;`
     let valuesUpdateUserPass =  [hashNewPassword, selectedUserID]
 
-
-    db.query(queryStringCheckAdminPass, valuesCheckAdminPass)
+    db.query(SQLStringCheckAdminPass, valuesCheckAdminPass)
     .then(data => {
+      //Checking if the role ID of the requestor is 1 (admin). If not, deny the rquest. 
+      //If rold ID = 1, then checks the password of the requestor to ensure if it's correct. After ensuring it's correct, then update the password. 
       if((data['rowCount'] != 1)) {
         res.status(500).send('Internal Database Error! Please contact your system administrator')
       } else if(bcrypt.compareSync(currentPassword, data['rows'][0]['password'])){
-        db.query(queryStringUpdateUserPass, valuesUpdateUserPass)
+        db.query(SQLStringUpdateUserPass, valuesUpdateUserPass)
         .then(data => {    
           res.status(200).send('Password update successful')
         })
@@ -204,12 +198,10 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
         .status(500)
         .json({ error: err.message });
     });    
-
   });
 
-
-  
-  router.post("/login", (req, res) => {
+  //Logging in the user
+  router.post('/login', (req, res) => {
     const username = req.body.username.trim().toLowerCase().toString();
     const password = req.body.password
 
@@ -219,11 +211,11 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
     }
 
     //Query strings for DB
-    let queryStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE username = $1;`
+    let SQLStringCheckUser = `SELECT id, username, password, role FROM USERS WHERE username = $1;`
     let valuesCheckUser =  [username]
 
-    //Checks if user exists first. Throws error if already exists, if not create new user in DB. 
-    db.query(queryStringCheckUser, valuesCheckUser)
+    //Checks if the user exists, if it does, checks if password is correct. If correct, sets a cookie session in the browser and logs the user in. 
+    db.query(SQLStringCheckUser, valuesCheckUser)
       .then(data => {
 
         if(data['rowCount'] == 0){
@@ -247,13 +239,6 @@ module.exports = (db, bcrypt, cookieSession, getUserData) => {
           .json({ error: err.message });
       });
   });
-
-  router.post("/update", (req, res) => {
-
-  });
-
-
-  
 
   router.post("/logout", (req, res) => {
     req.session = null;

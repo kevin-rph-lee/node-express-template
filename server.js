@@ -49,13 +49,13 @@ getUserData = (req) =>{
   // console.log('Role ' + req.session.role)
 
   if((req.session.userName == undefined) || (req.session.userName == null)){
-    // console.log('Not logged in')
+    // console.log('User not logged in')
     user = {id: null, 
             userName: null, 
             role: null};
     return user;
   } else {
-    // console.log('Logged in')
+    // console.log('User logged in')
     user = {userName:req.session.userName,
             id: req.session.id,
             role: req.session.role}
@@ -64,12 +64,10 @@ getUserData = (req) =>{
 }
 
 // Separated Routes for each Resource
-// Note: Feel free to replace the example routes below with your own
 const usersRoutes = require("./routes/users");
 
 // Resource routes
 app.use("/users", usersRoutes(db, bcrypt, cookieSession, getUserData));
-// Note: mount other resources here, using the same pattern above
 
 // Home page
 app.get("/", (req, res) => {
