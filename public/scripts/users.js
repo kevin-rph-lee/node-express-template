@@ -1,11 +1,13 @@
 $(() => {
 
+  //Updating a user's own password
   $('#newPassword-submit').click(function(e){
       e.preventDefault()
       const currentPassword = $('#currentPassword').val();
       const newPassword = $('#newPassword1').val();
       const newPasswordConfirm = $('#newPassword2').val();
-      console.log('Clickong new new passowrd')
+      
+      //Checking minimum length of user's current password
       if (currentPassword.length < 1) {
           $('.newPassword-alert').append(`
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -20,8 +22,7 @@ $(() => {
           return;
       }
 
-
-      //Checking for min password length
+      //Checking minimum length of user's new password
       if (newPassword.length <= 4 ) {
         $('.newPassword-alert').append(`
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -36,7 +37,7 @@ $(() => {
         return;
       }
 
-      //Checking if the passwords match
+      //Checking if the two new password text boxes match
       if (newPassword !== newPasswordConfirm) {
         $('.newPassword-alert').append(`
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -51,6 +52,7 @@ $(() => {
         return;
       }
 
+      //Sending request to route
       $.ajax({
         url: '/users/' + userID + '/edit/',
         data: {currentPassword: currentPassword, newPassword: newPassword},

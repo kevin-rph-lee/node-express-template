@@ -1,10 +1,12 @@
 $(() => {
 
+    //Validates if the email is formatted correctly
     function validateEmail (email) {
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
       }
 
+    //Logout user request
     $('#logout').click(function(e){
       e.preventDefault()
       $.ajax({
@@ -16,6 +18,7 @@ $(() => {
       })
     });
 
+    //Requesting to register a new user
     $('#register-submit').click(function(e){
         e.preventDefault()
         const username = $('#register-username').val();
@@ -67,6 +70,7 @@ $(() => {
           return;
         }
     
+        //If everything is validated, sends the new user request
         $.ajax({
           url: '/users/new',
           data: {username: username.toLowerCase(), password: password},
@@ -86,6 +90,7 @@ $(() => {
         });
       });
 
+      //Login user request
       $('#login-submit').click(function(e){
         e.preventDefault()
         const username = $('#login-username').val();
@@ -106,6 +111,7 @@ $(() => {
             return;
         }
 
+        //Sends login request if everything is validated
         $.ajax({
           url: '/users/login',
           data: {username: username.toLowerCase(), password: password},
@@ -126,9 +132,6 @@ $(() => {
           $(".alert").delay(3000).fadeOut("slow");
         });
       });
-
-
-
 
 });
   
