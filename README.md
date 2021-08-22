@@ -10,7 +10,7 @@ A basic template for web applications using Node/Express with a Postgres databas
 
 Users held within a PostgreSQL DB and authentication managed using Cookie-Session. Ability to login/logout and register new users. Users either have a role 1 (Admin) or 2 (regular user)
 
-Users who login can update their own password. 
+Users who login can update their own password and view some basic information about their account. 
 
 ![](https://raw.githubusercontent.com/kevin-rph-lee/node-express-template/master/2.JPG)
 
