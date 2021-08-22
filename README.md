@@ -1,8 +1,8 @@
-# Node Express Skeleton
+# Node Express Webapp Template
 
 A basic template for web applications using Node/Express with a Postgres database.
 
-![](1.jpg)
+![](https://raw.githubusercontent.com/kevin-rph-lee/node-express-template/master/1.JPG)
 
 ## Features
 
@@ -12,14 +12,15 @@ Users held within a PostgreSQL DB and authentication managed using Cookie-Sessio
 
 Users who login can update their own password. 
 
-![](2.jpg)
+![](https://raw.githubusercontent.com/kevin-rph-lee/node-express-template/master/2.JPG)
 
 ### User Administration Dashboard
 
 If logged in as an Admin, they can reset the password of other users.
 
-![](3.jpg)
-![](4.jpg)
+![](https://raw.githubusercontent.com/kevin-rph-lee/node-express-template/master/3.JPG)
+
+![](https://raw.githubusercontent.com/kevin-rph-lee/node-express-template/master/4.JPG)
 
 ## Getting Started
 
@@ -31,11 +32,11 @@ npm run db:seed
 open http://localhost:8080
 ```
 
-The *npm run db:reset* command will drop application DB tables and rebuild them (removing any data) based off \bin\resetdb.js.
+The *npm run db:reset* command will drop application DB tables and rebuild them (removing any data) based off bin/resetdb.js.
 
-The *npm run db:seedusers* command will rerun the seed data file within \bin\seed.js and password data from the .env file
+The *npm run db:seedusers* command will rerun the seed data file within bin/seed.js and password data from the .env file
 
-If deployed to Heroku environment, the \lib\db.js file will recognize that the DATABASE_URL config var that is automatically created by Heroku and will connect using that instead. 
+If deployed to Heroku environment, the lib/db.js file will recognize that the DATABASE_URL config var that is automatically created by Heroku and will connect using that instead. 
 
 ## Dependencies
 
